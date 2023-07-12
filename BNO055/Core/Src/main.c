@@ -26,11 +26,22 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "accel.h"
-int __io_putchar(uint8_t ch)
+#include "bno055_stm32.h"
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+PUTCHAR_PROTOTYPE
+
 {
-	return ITM_SendChar(ch);
+
+HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+
+return ch;
+
 }
+
 
 /* USER CODE END Includes */
 
@@ -88,9 +99,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint8_t		imu_readings[IMU_NUMBER_OF_BYTES];
-	int16_t 	accel_data[3];
-	float		acc_x, acc_y, acc_z;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -115,8 +124,10 @@ int main(void)
   MX_I2C3_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  printf("Hello\r\n");
-  BNO055_Init_I2C(&hi2c3);
+//  printf("Hello\r\n");
+  bno055_assignI2C(&hi2c3);
+  bno055_setup();
+  bno055_setOperationModeNDOF();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -124,17 +135,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_Delay(300);
-	  GetAccelData(&hi2c3, (uint8_t*)imu_readings);
-	  accel_data[0] = (((int16_t)((uint8_t *)(imu_readings))[1] << 8) | ((uint8_t *)(imu_readings))[0]);      // Turn the MSB and LSB into a signed 16-bit value
-	  accel_data[1] = (((int16_t)((uint8_t *)(imu_readings))[3] << 8) | ((uint8_t *)(imu_readings))[2]);
-	  accel_data[2] = (((int16_t)((uint8_t *)(imu_readings))[5] << 8) | ((uint8_t *)(imu_readings))[4]);
-	  acc_x = ((float)(accel_data[0]))/100.0f; //m/s2
-	  acc_y = ((float)(accel_data[1]))/100.0f;
-	  acc_z = ((float)(accel_data[2]))/100.0f;
-	  printf("X: %.2f Y: %.2f Z: %.2f\r\n", acc_x, acc_y, acc_z);
-
-
+	bno055_vector_t v = bno055_getVectorEuler();
+	printf("Orientation: %.2f %.2f %.2f\r\n", v.x, v.y, v.z);
+//	printf("Heading: %.2f Roll: %.2f Pitch: %.2f\r\n", v.x, v.y, v.z);
+//	v = bno055_getVectorQuaternion();
+//	printf("W: %.2f X: %.2f Y: %.2f Z: %.2f\r\n", v.w, v.x, v.y, v.z);
+	HAL_Delay(100);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
