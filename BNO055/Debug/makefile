@@ -75,8 +75,8 @@ all: main-build
 main-build: BNO055.elf secondary-outputs
 
 # Tool invocations
-BNO055.elf BNO055.map: $(OBJS) $(USER_OBJS) /Users/shibatakeigo/STM32CubeIDE/workspace_1.12.1/BNO055/STM32G431KBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "BNO055.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/shibatakeigo/STM32CubeIDE/workspace_1.12.1/BNO055/STM32G431KBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BNO055.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+BNO055.elf BNO055.map: $(OBJS) $(USER_OBJS) /Users/shibatakeigo/Development/t-semi/STM32/BNO055/STM32G431KBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "BNO055.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/shibatakeigo/Development/t-semi/STM32/BNO055/STM32G431KBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BNO055.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
