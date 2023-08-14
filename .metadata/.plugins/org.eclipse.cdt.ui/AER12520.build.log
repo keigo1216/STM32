@@ -1,0 +1,10 @@
+15:18:40 **** Incremental Build of configuration Debug for project AER12520 ****
+make -j7 all 
+arm-none-eabi-size   AER12520.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20124	    440	   3328	  23892	   5d54	AER12520.elf
+Finished building: default.size.stdout
+ 
+
+15:18:41 Build Finished. 0 errors, 0 warnings. (took 496ms)
+
