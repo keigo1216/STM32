@@ -76,7 +76,7 @@ main-build: AER12520.elf secondary-outputs
 
 # Tool invocations
 AER12520.elf AER12520.map: $(OBJS) $(USER_OBJS) /Users/shibatakeigo/Development/t-semi/STM32/AER12520/STM32F756ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "AER12520.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/shibatakeigo/Development/t-semi/STM32/AER12520/STM32F756ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AER12520.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "AER12520.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/shibatakeigo/Development/t-semi/STM32/AER12520/STM32F756ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AER12520.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
