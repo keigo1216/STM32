@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "stdbool.h"
 #include "string.h"
 /* USER CODE END Includes */
 
@@ -86,7 +87,25 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+bool angle_initialize = false;
+float base_angle;
+float cnt;
+char scnt[100];
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == GPIO_PIN_8) {
+	  char s[100];
+	  cnt = ((TIM3 -> CNT) % 2000) * 0.18;
+//	  sprintf(s, "Z raise\r\n");
+//	  HAL_UART_Transmit( &huart3, s, strlen(s) + 1, 0xFFFF);
+	  if (!angle_initialize) {
+		  angle_initialize = true;
+		  base_angle = cnt;
+	  }
+	  sprintf(s, "Z Raize! current angle: %f, base angle: %f\r\n", cnt, base_angle);
+	  HAL_UART_Transmit( &huart3, s, strlen(s) + 1, 0xFFFF);
+	  cnt = base_angle;
+  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -123,19 +142,19 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);
-  int cnt;
-  char scnt[100];
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	cnt = TIM3 -> CNT;
-	sprintf(scnt, "%d\r\n", cnt);
-	HAL_UART_Transmit( &huart3, scnt, strlen(scnt) + 1, 0xFFFF);
+	cnt = ((TIM3 -> CNT) % 2000) * 0.18;
+//	sprintf(scnt "%lf\r\n", cnt);
+	sprintf(scnt, "%f\r\n", cnt);
+//	HAL_UART_Transmit( &huart3, scnt, strlen(scnt) + 1, 0xFFFF);
 	HAL_Delay( 100 );
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -383,11 +402,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : USER_Btn_Pin */
-  GPIO_InitStruct.Pin = USER_Btn_Pin;
+  /*Configure GPIO pins : USER_Btn_Pin PC8 */
+  GPIO_InitStruct.Pin = USER_Btn_Pin|GPIO_PIN_8;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
   GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
@@ -408,6 +427,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
