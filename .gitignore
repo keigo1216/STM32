@@ -47,7 +47,7 @@
 /lib
 .metadata/
 
-/Debug
+/Debug/
 /Release
 /.settings
 .mxproject
