@@ -46,3 +46,9 @@
 # Libraries
 /lib
 .metadata/
+
+/Debug
+/Release
+/.settings
+.mxproject
+*.launch
